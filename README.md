@@ -1,18 +1,22 @@
 # Corona-Tec Getting started
 Before we jump into designing and programming our next game, we need to think about the features and other aspects. This usually begins with a design document for any major project.
 
-# Introduction
+## Introduction
 Corona SDK works with Lua programming language.
 In Lua comments are written with **--** before the comment
 
 Lua variables are declared with the reserved word **local** before the variable name.
-*Lua variables use type inference, which means no type data definition is needed to be declare since the language automatically tries to deduce its type*
+*Lua variables use type inference, which means no type data definition is needed to be declare since the language automatically tries to deduce its type.*
 
-Lua functions are declared with the syntax 
-**local function** *FunctionName* (*parameters needed*)
-*content*
-**end** 
+Lua functions are declared with the syntax: 
 
+
+`local` `function` *FunctionName*(*parameters_needed...*)
+<br>
+*content...*
+<br>
+`end`
+ 
 
 
 ## For star explorer game: 
