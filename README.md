@@ -13,7 +13,7 @@ Lua functions are declared with the syntax:
 
 `local` `function` *FunctionName*(*parameters_needed...*)
 <br>
-*content...*
+&emsp;*content...*
 <br>
 `end`
  
