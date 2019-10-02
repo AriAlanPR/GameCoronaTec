@@ -1,7 +1,8 @@
 # Corona-Tec Getting started
 Before we jump into designing and programming our next game, we need to think about the features and other aspects. This usually begins with a design document for any major project.
 
-## For star explorer game: Design Document
+## For star explorer game: 
+**Design Document**
 ```
 * Game Title:	Star Explorer — a space shooter game.
 * Description:	Maneuver your starship through an asteroid field, destroying asteroids as you progress.
@@ -31,8 +32,19 @@ width and height — These values specify the content area size for the app. In 
 
 * **NOTE:** - *It's important to understand that these values do not indicate an exact number of pixels, but rather a relative number of content "units" for the app. The content area will be scaled to fit any device's screen, with subtle differences dictated by the scale definition (see the next point).*
 
+```
+scale — This important setting tells Corona how to handle the content area for screens which do not match the aspect ratio defined by the width and height settings, for example 3:4 in this case. The two most common options are "letterbox" and "zoomEven".
+```
+
+* "letterbox" *scales the content area to fill the screen while preserving the same aspect ratio. The entire content area will reside on the screen, but this might result in "black bars" on devices with aspect ratios that differ from your content aspect ratio. Note, however, that you can still utilize this "blank" area and fill it with visual elements by positioning them or extending them outside the content area bounds. Essentially, "letterbox" is an ideal scale mode if you want to ensure that everything in your content area appears within the screen bounds on all devices.*
+
+* "zoomEven" *scales the content area to fill the screen while preserving the same aspect ratio. Some content may "bleed" off the screen edges on devices with aspect ratios that differ from your content aspect ratio. Basically, "zoomEven" is a good option to ensure that the entire screen is filled by the content area on all devices (and content clipping near the outer edges is acceptable).*
 
 
+## Physics Setup
+```
+local physics = require( "physics" )
+```
 
 ### References 
 [Corona Labs official documentation](https://docs.coronalabs.com/guide/programming/)
