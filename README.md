@@ -1,6 +1,20 @@
 # Corona-Tec Getting started
 Before we jump into designing and programming our next game, we need to think about the features and other aspects. This usually begins with a design document for any major project.
 
+# Introduction
+Corona SDK works with Lua programming language.
+In Lua comments are written with **--** before the comment
+
+Lua variables are declared with the reserved word **local** before the variable name.
+*Lua variables use type inference, which means no type data definition is needed to be declare since the language automatically tries to deduce its type*
+
+Lua functions are declared with the syntax 
+**local function** *FunctionName* (*parameters needed*)
+*content*
+**end** 
+
+
+
 ## For star explorer game: 
 **Design Document**
 ```
@@ -44,6 +58,16 @@ scale — This important setting tells Corona how to handle the content area for
 ## Physics Setup
 ```
 local physics = require( "physics" )
+```
+ By default, the physics engine simulates standard Earth gravity which causes objects to fall toward the bottom of the screen. To change this, we use the physics.setGravity() command which can simulate gravity in both the horizontal (x) or vertical (y) directions. 
+ Since this game takes place in outer space, we are going to assume that gravity does not apply. Thus, we set both values to 0.
+
+## Random Seed
+Our game will randomly spawn asteroids outside of the screen edges, so we'll be implementing random number generation further along in this project. First, though, we need to set the "seed" for the pseudo-random number generator. 
+
+On some operating systems, this generator begins with the same initial value which causes random numbers to repeat in a predictable pattern. The following addition to our code ensures that the generator always starts with a different seed.
+```
+math.randomseed( os.time() )
 ```
 
 ### References 
