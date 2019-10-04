@@ -74,14 +74,6 @@ print( t.bar )       --> 10
 print( t["bar"] )    --> 10
 ```
 
-Lua functions are declared with the syntax: 
-
-`local` `function` *FunctionName*(*parameters_needed...*)
-<br>
-&emsp;*content...*
-<br>
-`end`
-
 **Note:** *Tables can´t contain nil values, in particular, because functions are first-class values, table fields can contain functions. Thus tables can also carry methods.*
 
 **Note:** *Lua provides automatic conversion between string and number values at run time. Any arithmetic operation applied to a string tries to convert this string to a number, following the usual conversion rules. Conversely, whenever a number is used where a string is expected, the number is converted to a string, in a reasonable format. For complete control over how numbers are converted to strings, use the string.format function from the string library.*
@@ -103,6 +95,80 @@ t[2] = "foo"     -- New table entry with key = 2 and value = "foo"
 print( t[2] )    --> "foo"
 ```
 
+
+Lua functions are declared with the syntax: 
+
+`local` `function` *FunctionName*(*parameters_needed...*)
+<br>
+&emsp;*content...*
+<br>
+`end`
+
+### Expressions
+**Aritmetic operators**
+```
++	addition
+-	subtraction
+*	multiplication
+/	division
+%	modulo
+^	exponentiation
+```
+
+**Relational operators**
+```
+==	equal to
+~=	not equal to
+<	less than
+>	greater than
+<=	less than or equal to
+>=	greater than or equal to
+```
+
+**Logical operators**
+The logical operators in Lua are `and`, `or`, and `not`. All logical operators consider both `false` and `nil` as false and anything else as true.
+
+Both `and` and `or` use shortcut evaluation — the second operand is evaluated only if necessary.
+```
+10 or 20           --> 10
+10 or error()      --> 10
+nil or "a"         --> "a"
+nil and 10         --> nil
+false and error()  --> false
+false and nil      --> false
+false or nil       --> nil
+10 and 20          --> 20
+```
+
+**Concatenation**
+The string concatenation operator in Lua is denoted by two dots (`..`). If both operands are strings or numbers, then they are converted to strings according to the conversion rules mentioned above.
+
+```
+local s = "foo".."10" --> "foo10"
+```
+
+**Length Operator**
+The length operator is denoted by the unary operator #. 
+
+The length of a string is its number of bytes — the usual meaning of string length when each character is one byte.
+
+The length of a table `t` is defined to be any integer index `n` such that `t[n]` is not `nil` and `t[n+1]` is `nil`; moreover, if `t[1]` is `nil`, `n` can be zero. 
+
+**Note:** *For a regular array, with non-nil values from **1** to a given `n`, its length is exactly that `n`, the index of its last value. If the array has "holes" (`nil` values between other non-nil values), then `#t` can be any of the indices that directly precedes a `nil` value. Thus, it may consider any such `nil` value as the end of the array.*
+
+**Precedence**
+Operator precedence in Lua follows the list below, from lower to higher priority:
+```
+|   or
+|   and
+|   <, >, <=, >=, ~=, ==
+|   ..
+|   +, -
+|   *, /, %
+|   not, #, - (unary)
+|   ^
+v   ()
+```
 
 ## For star explorer game: 
 **Design Document**
@@ -165,4 +231,5 @@ math.randomseed(os.time())
 
 
 ### References 
-[Corona Labs official documentation](https://docs.coronalabs.com/guide/programming/)
+* [Corona Labs official Getting Started documentation](https://docs.coronalabs.com/guide/programming/)
+* [Corona Labs Introduction to Lua documentation](https://docs.coronalabs.com/guide/start/introLua/index.html)
