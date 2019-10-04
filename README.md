@@ -1,7 +1,7 @@
 # Corona-Tec Getting started
 Before we jump into designing and programming our next game, we need to think about the features and other aspects. This usually begins with a design document for any major project.
 
-## Introduction
+## Introduction to Lua
 Corona SDK works with Lua programming language.
 In Lua comments are written with `--` before the comment.
 
@@ -16,9 +16,22 @@ print( 15 )
 --]]
 ```
 
-A **numerical constant** can be written with an optional decimal part and an optional decimal exponent. 
+Also **Lua** basic types that should be concerned for our purposes are:
+* **nil** — equivalent to *null* in other programming languages, means absence of type and value.
+* **boolean** — the type of the values false and true. Both nil and false make a condition false; any other value makes it true.
+* **number** — represents real (double-precision floating-point) numbers.
+* **string** — represents arrays of characters. Lua is 8-bit clean: strings can contain any 8-bit character, including embedded zeros.
+* **function** — Methods that return a value.
+* **table** — the sole data structuring mechanism in Lua, Tables are objects. They implement associative arrays, meaning that arrays can be indexed not only with numbers, but with any value except nil, also they can be heterogeneous, meaning that they can contain diferent elements with different data types.
 
-Lua variables. There are three kinds of variables in Lua: **global**, **local**, and **table fields (properties)**. Any non-initialized variable is `nil` by default.
+A **numerical constant** can be written with an optional decimal part and an optional decimal exponent. Lua also accepts integer hexadecimal constants, by prefixing them with 0x. 
+
+```
+3    3.0    3.1416    314.16e-2    0.31416E1    0xff    0x56
+```
+
+### Lua variables. 
+There are three kinds of variables in Lua: **global**, **local**, and **table fields (properties)**. Any non-initialized variable is `nil` by default.
 
 **Note:** *Lua variables use type inference, which means no type data definition is needed to be declare since the language automatically tries to deduce its type. In other words, variables do not have types, only values do.*
 
@@ -49,6 +62,18 @@ print( a )         --> 10 (the global "a")
 
 **Table fields** are just the elements of the table themselves. You index into the array to assign the values to a field.
 
+```
+t = { foo="hello" }  -- Create table with a single property "foo"
+print( t.foo )       --> "hello"
+ 
+t.foo = "bye"        -- Assign a new value to property "foo"
+print( t.foo )       --> "bye"
+ 
+t.bar = 10           -- Create a new property named "bar"
+print( t.bar )       --> 10
+print( t["bar"] )    --> 10
+```
+
 Lua functions are declared with the syntax: 
 
 `local` `function` *FunctionName*(*parameters_needed...*)
@@ -56,14 +81,6 @@ Lua functions are declared with the syntax:
 &emsp;*content...*
 <br>
 `end`
- 
-Also **Lua** basic types that should be concerned for our purposes are:
-* nil — equivalent to *null* in other programming languages, means absence of type and value.
-* boolean — the type of the values false and true. Both nil and false make a condition false; any other value makes it true.
-* number — represents real (double-precision floating-point) numbers.
-* string — represents arrays of characters. Lua is 8-bit clean: strings can contain any 8-bit character, including embedded zeros.
-* function — Methods that return a value.
-* table — the sole data structuring mechanism in Lua, Tables are objects. They implement associative arrays, meaning that arrays can be indexed not only with numbers, but with any value except nil, also they can be heterogeneous, meaning that they can contain diferent elements with different data types.
 
 **Note:** *Tables can´t contain nil values, in particular, because functions are first-class values, table fields can contain functions. Thus tables can also carry methods.*
 
