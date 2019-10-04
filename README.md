@@ -95,14 +95,45 @@ t[2] = "foo"     -- New table entry with key = 2 and value = "foo"
 print( t[2] )    --> "foo"
 ```
 
+### Functions
+Plain functions are just as expected: you provide arguments as input (within the parentheses), the function performs some tasks, and the results can be returned.
 
-Lua functions are declared with the syntax: 
+Lua functions can be declared in many different ways: 
 
 `local` `function` *FunctionName*(*parameters_needed...*)
 <br>
 &emsp;*content...*
 <br>
 `end`
+
+
+`local` *FunctionName* = `function` (*parameters_needed...*)
+<br>
+&emsp;*content...*
+<br>
+`end`
+
+`function` *FunctionName* (*parameters_needed...*)
+<br>
+&emsp;*content...*
+<br>
+`end`
+
+*FunctionName* = `function` (*parameters_needed...*)
+<br>
+&emsp;*content...*
+<br>
+`end`
+
+### Objects
+
+Objects in Lua are represented by tables. Display objects and the global Runtime object are all objects. 
+<br>
+Like the math library, these objects similarly store object methods (instance methods) as properties. One key difference, however, is syntax. You need to tell Lua that you intend this function to be called as an object method, not just a plain function. 
+<br>
+To do so, you need to use the colon (:) operator instead of the dot operator. This may be different from other languages.
+
+
 
 ### Expressions
 **Aritmetic operators**
@@ -141,6 +172,7 @@ false or nil       --> nil
 ```
 
 **Concatenation**
+<br>
 The string concatenation operator in Lua is denoted by two dots (`..`). If both operands are strings or numbers, then they are converted to strings according to the conversion rules mentioned above.
 
 ```
@@ -148,6 +180,7 @@ local s = "foo".."10" --> "foo10"
 ```
 
 **Length Operator**
+<br>
 The length operator is denoted by the unary operator #. 
 
 The length of a string is its number of bytes — the usual meaning of string length when each character is one byte.
@@ -157,6 +190,7 @@ The length of a table `t` is defined to be any integer index `n` such that `t[n]
 **Note:** *For a regular array, with non-nil values from **1** to a given `n`, its length is exactly that `n`, the index of its last value. If the array has "holes" (`nil` values between other non-nil values), then `#t` can be any of the indices that directly precedes a `nil` value. Thus, it may consider any such `nil` value as the end of the array.*
 
 **Precedence**
+<br>
 Operator precedence in Lua follows the list below, from lower to higher priority:
 ```
 |   or
@@ -169,6 +203,22 @@ Operator precedence in Lua follows the list below, from lower to higher priority
 |   ^
 v   ()
 ```
+
+**Syntax comparisons**
+
+* **semicolons** — trailing semicolon at the end of each statement (effectively a line of code) are optional in Lua.
+
+* **braces** — You may be accustomed to using { } to define variable scope. In Lua, you do this by bracketing the code with do and end. Braces in Lua are interpreted as table constructors.
+
+* **if - then - else** — if you come from C, Java, Javascript, etc., a common mistake you'll make in writing if and elseif statements is forgetting to append then to the end of the if/elseif test conditions. Another common mistake is inadvertently using else if (with a space) when Lua expects elseif.
+
+* **arrays** — in Lua, arrays are 1-based. Technically, you can index into an array starting with 0. However, Lua and Corona APIs assume that the first element of a table t is t[1], not t[0].
+
+* **multiple return values** — an unconventional but useful feature in Lua is the ability of a function to return more than one result.
+
+* **multiple assignment** — multiple assignments offer a convenient way to swap values. The statement x,y = y,x will swap x for y and vice versa.
+
+* **ternary operator (? :)** — Lua does not offer the equivalent to the C ternary operator a?b:c. The Lua idiom (a and b) or c offers a close approximation provided b is not false. For example, the Lua equivalent to max = (x>y?x:y) would be max = ( x>y and x or y).
 
 ## For star explorer game: 
 **Design Document**
