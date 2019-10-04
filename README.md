@@ -24,7 +24,7 @@ Also **Lua** basic types that should be concerned for our purposes are:
 * **function** — Methods that return a value.
 * **table** — the sole data structuring mechanism in Lua, Tables are objects. They implement associative arrays, meaning that arrays can be indexed not only with numbers, but with any value except nil, also they can be heterogeneous, meaning that they can contain diferent elements with different data types.
 
-A **numerical constant** can be written with an optional decimal part and an optional decimal exponent. Lua also accepts integer hexadecimal constants, by prefixing them with 0x. 
+A **numerical constant** can be written with an optional decimal part and an optional decimal exponent. Lua also accepts integer hexadecimal constants, by prefixing them with `0x`. 
 
 ```
 3    3.0    3.1416    314.16e-2    0.31416E1    0xff    0x56
