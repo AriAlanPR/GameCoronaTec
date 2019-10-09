@@ -278,7 +278,12 @@ math.randomseed(os.time())
 **Note:** 
 *When you intend to generate random numbers in an app, seed the pseudo-random number generator just once, typically within main.lua. Doing so multiple times is redundant and unnecessary.*
 
+## Some properties
 
+we specify properties whilst coding: 
+`isSensor = true`. This tells Corona that the object should be a sensor object. 
+Essentially, sensor objects detect collisions with other physical objects but they do not produce a physical response. 
+`radius = ?`. Used to add a circular physical body to the object we´re working on.
 
 ### References 
 * [Corona Labs official Getting Started documentation](https://docs.coronalabs.com/guide/programming/)
