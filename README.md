@@ -220,6 +220,34 @@ v   ()
 
 * **ternary operator (? :)** — Lua does not offer the equivalent to the C ternary operator a?b:c. The Lua idiom (a and b) or c offers a close approximation provided b is not false. For example, the Lua equivalent to max = (x>y?x:y) would be max = ( x>y and x or y).
 
+## if-then 
+
+Conditional expressions are made with the syntax
+
+`ìf` *condition* `then`
+<br>
+&emsp;*content of true condition*
+<br>
+`else`
+<br>
+&emsp;*content of false condition*
+<br>
+`end`
+
+**Note:** *Its possible to use* `elsif` *instead of* `else` *to keep going with more conditions. Also it´s optional to use paretheses when writing the condition.*
+
+## For loop
+In Lua for loops are declared with the sintax:
+
+
+`for` *variable = startvalue, limit, countby* `do`
+<br> 
+&emsp;*content code*
+<br> 
+`end`
+
+As you can see, we use this method in our for loop which takes the indicated form — basically, Lua uses a *variable* that holds the start value or index, stops at a *limit* value, and *counts by* a value which is a decrement when that value is negative and vice versa.
+
 ## For star explorer game: 
 **Design Document**
 ```
@@ -281,9 +309,37 @@ math.randomseed(os.time())
 ## Some properties
 
 we specify properties whilst coding: 
-`isSensor = true`. This tells Corona that the object should be a sensor object. 
+* `isSensor = bool`. This tells Corona that the object should be a sensor object. 
 Essentially, sensor objects detect collisions with other physical objects but they do not produce a physical response. 
-`radius = ?`. Used to add a circular physical body to the object we´re working on.
+* `isBullet = Bool`. Complement to `isSensor` property, this helps us have the object subject to continuous collission detection rather than real world collision detection at certain time steps.
+* `radius = number`. Used to add a circular physical body to the object we´re working on.
+
+## Cleanup
+New lasers will appear at the same location as the ship (visually behind it too) and move upward across the screen. There is just one last thing to implement, and it's very important: cleanup. In any app, it's critical that you remove objects from the game which are no longer needed. If you don't, the app will eventually slow to a crawl, run out of memory, and crash — not a good experience for the player!
+
+In Corona, there are various approaches toward cleanup and it will depend on the situation. For the lasers, we're going to use a very convenient method known as an onComplete callback. Available as an option within `transition.to()` and several other commands, this tells Corona that you want to call a function when something "completes."
+
+## Events and listeners
+
+**Tap Listener**
+<br>
+A "tap" event listener allows the player to respond to a touch over an object.
+
+**Touch events**
+<br>
+Distinct from tap events, have four distinct phases based on the state of the user's touch:
+
+* `"began"` — indicates that a touch has started on the object (initial touch on the screen).
+* `"moved"` — indicates that a touch position has moved on the object.
+* `"ended"` — indicates that a touch has ended on the object (touch lifted from the screen).
+* `"cancelled"` — indicates that the system cancelled tracking of the touch (not to be confused with "ended").
+
+## Game Loop
+Many games include some type of game loop to handle the updating of information, checking/updating the state of game objects, etc. 
+<br>
+A game loop function is usually short — instead of containing a large amount of code itself, it typically calls other functions to handle specific repetitive functionality.
+<br>
+For **Star explorer** game will be used to create new asteroids and clean up "dead" asteroids.
 
 ### References 
 * [Corona Labs official Getting Started documentation](https://docs.coronalabs.com/guide/programming/)

@@ -91,14 +91,145 @@ scoreText = display.newText( uiGroup, "Score: " .. score, 400, 80, native.system
 -- Hide the status bar
 display.setStatusBar( display.HiddenStatusBar )
 
+--Update text of game
 local function updateText()
     livesText.text = "Lives: " .. lives
     scoreText.text = "Score: " .. score
 end
 
+--Make a function to create a new asteroid
 local function createAsteroid() 
     local newAsteroid = display.newImageRect( mainGroup, objectSheet, 1, 102, 85 )
     table.insert( asteroidsTable, newAsteroid )
     physics.addBody( newAsteroid, "dynamic", { radius=40, bounce=0.8 } )
     newAsteroid.myName = "asteroid"
+
+    --Placement
+    local whereFrom = math.random( 3 )
+
+    if ( whereFrom == 1 ) then
+        -- From the left
+        newAsteroid.x = -60
+        newAsteroid.y = math.random( 500 )
+        -- Movement
+        -- Event similar to applyLinearImpulse with the difference that 
+        --instead of applying a sudden "push" to the object, it simply sets the object moving in a steady, consistent direction.
+        newAsteroid:setLinearVelocity( math.random( 40,120 ), math.random( 20,60 ) ) --Parameters send are the velocity for x and y directions respectively
+    elseif ( whereFrom == 2 ) then
+        -- From the top
+        newAsteroid.x = math.random( display.contentWidth )
+        newAsteroid.y = -60
+        newAsteroid:setLinearVelocity( math.random( -40,40 ), math.random( 40,120 ) )
+    elseif ( whereFrom == 3 ) then
+        -- From the right
+        newAsteroid.x = display.contentWidth + 60
+        newAsteroid.y = math.random( 500 )
+        newAsteroid:setLinearVelocity( math.random( -120,-40 ), math.random( 20,60 ) )
+    end
+
+    --[[
+        Reminder:
+        Notice that we call math.random() with two parameters this time, 
+        while before we called it with just one. 
+        When called with one parameter, 
+        the command randomly generates an integer between 1 and the value you indicate.
+        When called with two parameters, the command randomly generates an integer between the two specified values,
+        for example between 40 and 120 in the first instance above.
+    --]]
+
+    -- Rotation
+    newAsteroid:applyTorque( math.random( -6,6 ) )
+end --function create asteroid
+
+--[[
+    Getting our ship to fire lasers is similar to loading asteroids, but this time we'll use a 
+    convenient and powerful method to move them known as a transition.     
+--]]
+
+local function fireLaser()
+ 
+    local newLaser = display.newImageRect( mainGroup, objectSheet, 5, 14, 40 )
+    physics.addBody( newLaser, "dynamic", { isSensor=true } )
+    -- isBullet property makes the object subject to continuous collision detection rather than periodic collision detection at world time steps.
+    newLaser.isBullet = true
+    newLaser.myName = "laser"
+
+    newLaser.x = ship.x
+    newLaser.y = ship.y
+    -- Because this function creates new lasers after the ship has already been loaded, 
+    -- and both objects are part of the mainGroup display group, lasers will appear visually 
+    -- above (in front of) the ship in terms of layering. Clearly this looks silly, so let's push it behind the ship
+    newLaser:toBack()
+
+    --[[
+        As you can see, the first parameter is the object to transition (newLaser). 
+        For the second parameter, we include a table which can contain various properties for the transition. 
+        Here, we set y=-40 which indicates the laser's vertical destination, slightly off the top edge of the screen. 
+        We also set a custom time parameter of 500. For transitions, the time (duration) should always be specified in milliseconds
+        meaning 1 sec 0 1000 milisecs
+    ]]
+    transition.to( newLaser, { y=-40, time=500, 
+    onComplete = function() display.remove( newLaser ) end} ) -- Sent Anonymous function
+end
+
+-- let's finish up by assigning the ship a "tap" event listener so that the player can actually fire lasers
+-- Tap Listener
+ship:addEventListener( "tap", fireLaser ) -- Notice that fireLaser is the name of the function previously created
+
+
+-- Moving the Ship
+
+--[[
+    In this game, in addition to firing lasers,
+    the player will be able to touch and drag
+    the ship along the bottom of the screen.
+    To handle this type of movement,
+    we need a function to handle touch/drag events.
+    Let's create this function in the usual manner:
+]]
+
+-- Touch Events
+-- Touch events, distinct from tap events, have four distinct phases 
+
+local function dragShip( event )
+    -- In touch/tap events, event.target is the object which was touched/tapped, 
+    --so setting this local variable as a reference to the ship object will save us some typing
+    local ship = event.target
+    -- Let's locally set the phase (event.phase) of the touch event
+    local phase = event.phase
+
+    -- If it has just begun (initial touch on the ship), 
+    -- the "began" phase is dispatched to our function
+    if ( phase == "began" ) then
+        -- Set touch focus on the ship
+        display.currentStage:setFocus( ship )
+        -- Store initial offset position
+        ship.touchOffsetX = event.x - ship.x
+        -- If moving across y coordinate is wanted
+        --ship.touchOffsetY = event.y - ship.y
+    elseif (  phase == "moved" ) then
+        -- Move the ship to the new touch position
+        ship.x = event.x - ship.touchOffsetX        
+        -- Same case if needed for y
+        --ship.y = event.y ship.touchOffsetY
+    elseif ( phase == "ended" or  phase == "cancelled" ) then
+        -- Release touch focus on the ship
+        display.currentStage:setFocus( nil )
+    end
+
+    return true  -- Prevents touch propagation to underlying objects
+end
+
+-- Touch Listener
+ship:addEventListener( "touch", dragShip )
+
+-- Game Loop
+local function gameLoop()
+    -- Create new asteroid
+    createAsteroid()
+ 
+    -- Remove asteroids which have drifted off screen
+    for i = #asteroidsTable, 1, -1 do 
+ 
+    end
 end
