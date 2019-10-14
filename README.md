@@ -383,6 +383,74 @@ Collisions are reported between pairs of objects, and they can be detected eithe
 
 Similar to touch events, collisions have distinct phases, in this case "began" and "ended".
 
+## Game Flow
+A scene is an isolated view or "page" of the app and everything that the player sees is contained in that scene. When an app starts, you're usually presented with a title/intro scene. From there, you may be able to navigate to a settings scene or proceed to a tutorial. Each level in a game might also be a dedicated scene, depending on the design goals.
+
+For star explorer game we will have three core scenes:
+
+* Menu — Title/intro scene containing various options.
+* Game — The actual game scene.
+* High Scores — A list of high scores.
+
+Corona uses a system called Composer to handle moving from scene to scene. To make development easier, each Composer scene is a separate Lua file — this helps keep your game more organized.
+
+## Composer and Scenes
+The `composer.gotoScene(scenename)` tells composer to load a scene using the file's name(no needed to add de .lua extension at the end). 
+<br>
+For example, in the following code we tell composer to load a scene from 'menu.lua' file: 
+```
+composer.gotoScene("menu")
+```
+
+Each Scene *.lua* file is where you should usually write your functions which pertain to scene behavior, declare variables which the scene must have persistent access to, etc.
+
+### Transition events
+The composer.gotoScene() command also allows you to specify a transition effect such as fading in, sliding in from a screen edge, cross-fading from the previous scene, etc. Naturally, there is a time duration associated with the start and finish of scene transitions, and this is where scene phases come into play.
+
+### Scene Events
+Composer scenes can utilize four (4) life cycle events, each triggered at different points in the scene's life:
+
+* **create**,	Occurs when the scene is first created but has not yet appeared on screen.
+* **show**,	Occurs twice, immediately before and immediately after the scene appears on screen.
+* **hide**,	Occurs twice, immediately before and immediately after the scene exits the screen.
+* **destroy**,	Occurs if the scene is destroyed.
+
+We can send these functions as listeners to the *scene* event. For example, in the following code:
+```
+scene:create( event )
+```
+It indicates that this function will be associated with the Composer create scene event and that a table of data that we reference with event will be passed to the function.
+
+### Scene Phases
+An important factor to understand (in contrast to scene:create()) is that Composer calls the scene:show() function twice. Of course it's imperative to know when each of these calls occurs so that we can take the proper actions at the proper time.
+
+Basically, scene:show() calls/phases work like this:
+
+* The first call occurs when the scene is ready to be shown, essentially after every command within scene:create() has been executed. In this case, event.phase is "will", effectively indicating that the scene "will show" and the transition effect is about to occur.
+
+* The second call occurs immediately after the scene has shown — basically, when the scene transition has completed. In this case, event.phase is "did", meaning the scene "did show" and the transition effect completed.
+
+Scene:hide() calls/phases work like this:
+
+* The first call occurs when the scene is about to be hidden (transition off screen). In this case, event.phase is "will", effectively indicating that the scene "will hide" and the transition effect is about to occur.
+* The second call occurs immediately after the scene is fully off screen. In this case, event.phase is "did", meaning the scene "did hide" and the transition effect completed.
+
+### Scene Cleanup
+Hopefully players will want to play the game again! By default, Composer caches scenes in memory to save processing power when the scene is revisited. So, even though it's hidden at this point, your game scene remains basically as you left it.
+
+To consider, we got some problems:
+
+* The asteroids from the previous game are still in the scene.
+* Your previous score still appears and lives remain at zero.
+* The ship isn't showing!
+
+Depending on the game, cleaning up a scene to restart fresh can involve some effort. In some certain games, we would need to "undo" some things we did in scene:create() as well as remove the references to old objects contained in the objectTable. We would also need to reset score, lives, and the some object's visibility within scene:show(). None of this is exceptionally complicated, but wouldn't it be convenient to have an easier way to reset a scene? Fortunately, Composer offers one:
+```
+composer.removeScene( scenename )
+```
+
+Essentially, this command removes and destroys the game.lua scene as if it never existed. By doing so, you lose the caching benefit mentioned above, but for most scenes it's not worth the effort to programmatically reset each aspect individually.
+
 ### References 
 * [Corona Labs official Getting Started documentation](https://docs.coronalabs.com/guide/programming/)
 * [Corona Labs Introduction to Lua documentation](https://docs.coronalabs.com/guide/start/introLua/index.html)
