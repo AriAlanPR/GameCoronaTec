@@ -313,11 +313,32 @@ we specify properties whilst coding:
 Essentially, sensor objects detect collisions with other physical objects but they do not produce a physical response. 
 * `isBullet = Bool`. Complement to `isSensor` property, this helps us have the object subject to continuous collission detection rather than real world collision detection at certain time steps.
 * `radius = number`. Used to add a circular physical body to the object we´re working on.
+* `ship.isBodyActive = Bool`. Effectively removes the ship from the physics simulation so that it ceases to interact with other bodies.  
 
 ## Cleanup
 New lasers will appear at the same location as the ship (visually behind it too) and move upward across the screen. There is just one last thing to implement, and it's very important: cleanup. In any app, it's critical that you remove objects from the game which are no longer needed. If you don't, the app will eventually slow to a crawl, run out of memory, and crash — not a good experience for the player!
 
 In Corona, there are various approaches toward cleanup and it will depend on the situation. For the lasers, we're going to use a very convenient method known as an onComplete callback. Available as an option within `transition.to()` and several other commands, this tells Corona that you want to call a function when something "completes."
+
+
+It's very important to understand basic Lua memory management and how it relates to Corona display objects. 
+<br>
+For example, with:
+
+```
+if ( thisAsteroid.x < -100 or
+    thisAsteroid.x > display.contentWidth + 100 or
+    thisAsteroid.y < -100 or
+    thisAsteroid.y > display.contentHeight + 100 )
+then
+    display.remove( thisAsteroid )
+    table.remove( asteroidsTable, i )
+end
+```
+
+The first command above, display.remove( thisAsteroid ), will remove the asteroid from the screen, visually. However, that command alone will not release the asteroid from Lua memory. Why?
+
+Because we stored an additional reference to the asteroid inside the asteroidsTable table, Lua cannot free up the memory allocated to the asteroid object until that reference is removed. That's why we perform the second command, table.remove( asteroidsTable, i ), directly afterward. This effectively removes that additional reference and, because there are no other persistent references to the object, the Lua garbage collection process can then automatically free its allocated memory.
 
 ## Events and listeners
 
@@ -340,6 +361,27 @@ Many games include some type of game loop to handle the updating of information,
 A game loop function is usually short — instead of containing a large amount of code itself, it typically calls other functions to handle specific repetitive functionality.
 <br>
 For **Star explorer** game will be used to create new asteroids and clean up "dead" asteroids.
+
+### Timer 
+Timers can be performed with the following method: `timer.performWithDelay()`.  Timers are useful for a wide array of game functionality.
+<br>
+The syntax for a timer method is:
+```
+timer.performWithDelay( time, functiontofire, numberoftimes )
+```
+First parameter sent is the time before the function fires in miliseconds(1s = 1000ms).
+<br>
+Then we send a function to fire when the time stablished has passed.
+<br>
+If the numberoftimes parameter is omitted, timers will simply fire once and stop. If the value sent to this parameter is
+**0** or **-1** the timer will keep firing the function indefinitely(unless we tell it to stop).
+
+## Collision Handling
+Collisions are reported between pairs of objects, and they can be detected either locally on an object, using an object listener, or globally using a runtime listener. Different games require different methods
+* Local collision handling is best utilized in a one-to-many collision scenario, for example one player object which may collide with multiple enemies, power-ups, etc.
+* Global collision handling is best utilized in a many-to-many collision scenario, for example multiple hero characters which may collide with multiple enemies.
+
+Similar to touch events, collisions have distinct phases, in this case "began" and "ended".
 
 ### References 
 * [Corona Labs official Getting Started documentation](https://docs.coronalabs.com/guide/programming/)

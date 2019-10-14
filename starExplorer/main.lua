@@ -230,6 +230,80 @@ local function gameLoop()
  
     -- Remove asteroids which have drifted off screen
     for i = #asteroidsTable, 1, -1 do 
+        local thisAsteroid = asteroidsTable[i]
  
+        if ( thisAsteroid.x < -100 or
+             thisAsteroid.x > display.contentWidth + 100 or
+             thisAsteroid.y < -100 or
+             thisAsteroid.y > display.contentHeight + 100 )
+        then
+            display.remove( thisAsteroid )
+            table.remove( asteroidsTable, i )
+        end
     end
 end
+
+gameLoopTimer = timer.performWithDelay( 500, gameLoop, 0 )
+
+--Restoring the Ship
+local function restoreShip()
+ 
+    ship.isBodyActive = false
+    -- Set the ship position to its initial place and to the center of the X coordinate
+    ship.x = display.contentCenterX
+    ship.y = display.contentHeight - 100
+ 
+    -- Fade in the ship
+    transition.to( ship, { alpha=1, time=4000,
+        onComplete = function()
+            ship.isBodyActive = true
+            died = false
+        end
+    } )
+end
+
+local function onCollision( event )
+    -- Verify if event phase of collision just began
+    if ( event.phase == "began" ) then
+        -- Get the collission objects
+        local obj1 = event.object1
+        local obj2 = event.object2
+        -- Verify if collision is laser towards asteroid or vice versa
+        if ( ( obj1.myName == "laser" and obj2.myName == "asteroid" ) or ( obj1.myName == "asteroid" and obj2.myName == "laser" ) ) then
+            -- Do the thing
+            -- Remove both the laser and asteroid
+            display.remove( obj1 )
+            display.remove( obj2 )
+ 
+            for i = #asteroidsTable, 1, -1 do
+                if ( asteroidsTable[i] == obj1 or asteroidsTable[i] == obj2 ) then
+                    table.remove( asteroidsTable, i )
+                    break
+                end
+            end
+ 
+            -- Increase score
+            score = score + 100
+            scoreText.text = "Score: " .. score
+
+        elseif ( ( obj1.myName == "ship" and obj2.myName == "asteroid" ) or ( obj1.myName == "asteroid" and obj2.myName == "ship" ) ) then
+            if ( not died ) then
+                died = true
+                
+                -- Update lives
+                lives = lives - 1
+                livesText.text = "Lives: " .. lives
+
+                if ( lives == 0 ) then
+                    display.remove( ship )
+                else
+                    ship.alpha = 0
+                    timer.performWithDelay( 1000, restoreShip )
+                end            
+            end            
+        end
+    end
+end
+
+-- Tell Corona that it should listen for new collisions during every runtime frame of the app
+Runtime:addEventListener( "collision", onCollision )
