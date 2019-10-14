@@ -451,6 +451,93 @@ composer.removeScene( scenename )
 
 Essentially, this command removes and destroys the game.lua scene as if it never existed. By doing so, you lose the caching benefit mentioned above, but for most scenes it's not worth the effort to programmatically reset each aspect individually.
 
+### Composer-Accessible Data
+Lua itself provides various ways to pass and access data between modules, but Composer makes it even easier with the following commands:
+
+* composer.setVariable() — Sets a variable declared in one scene to be accessible throughout the entire Composer-structured app.
+* composer.getVariable() — Allows you to retrieve the value of any variable previously set via composer.setVariable().
+
+For example: 
+```
+composer.setVariable( "finalScore", score )
+```
+composer.setVariable(*variablename*, *value*), creates a Composer-accessible variable named finalScore with an assigned value of the score variable. 
+The following method tells Corona to save a new file in a specified directory
+```
+system.pathForFile(filename, directory)
+```
+
+For example, if we call:
+```
+system.pathForFile( "file.json", system.DocumentsDirectory)
+```
+Property system.DocumentsDirectory tells Corona to create the *file*.json within the app's internal "documents" directory when saving a new file. 
+
+**Note:** Any data which needs to be accessed at some point after the app quits/closes should be stored in a persistent state, and the easiest way to store persistent data is to save it to a file on the device. Furthermore, this file must be stored in a persistent location.
+
+### Loading Data
+In the following example for star explorer game we can do an inspect of how to read scores:
+```
+local filePath = system.pathForFile( "scores.json", system.DocumentsDirectory )
+
+local function loadScores()
+ 
+    local file = io.open( filePath, "r" )
+ 
+    if file then
+        local contents = file:read( "*a" )
+        io.close( file )
+        scoresTable = json.decode( contents )
+    end
+ 
+    if ( scoresTable == nil or #scoresTable == 0 ) then
+        scoresTable = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+    end
+end
+```
+
+* When working with files containing data, the first step is to confirm that the file exists. 
+* In the conditional block following, if the file exists, its contents will be dumped into the local variable contents. Once we have its contents, we close the file with io.close( file ). 
+* we decode contents and store the values in scoresTable using json.decode() which converts a file of type *.json* into a Lua table which can be used in our app.
+* At the end, just in case the scores.json file is empty or doesn't exist, we assign scoresTable ten default values of 0 so that the scene has something to work with.  
+
+### Saving Data
+In the function below, we can make a tiny analysis like we did with the reading data for Star Explorer either:
+```
+local function saveScores()
+ 
+    for i = #scoresTable, 11, -1 do
+        table.remove( scoresTable, i )
+    end
+ 
+    local file = io.open( filePath, "w" )
+ 
+    if file then
+        file:write( json.encode( scoresTable ) )
+        io.close( file )
+    end
+end
+```
+
+* First, we clear out any unneeded scores from scoresTable. 
+* Next, we open the scores.json file. Unlike io.open() call within loadScores(), here we specify "w" as the second parameter. This tells Corona to create (write) a new file or overwrite the file if it already exists. It also tells Corona to open the file with write access.
+* Once the file is successfully open, we call file:write() to write the scoresTable data to the file, converted into JSON via the json.encode() command.
+* Finally, we close the file with io.close( file ).
+
+### Sort
+To sort a table we use the Lua `table.sort()` function.
+<br>
+For this to work, we must provide it with the table to sort and a reference to a comparison function (compare()) which determines if items need to swap places. 
+
+### Anchors
+By default, Corona positions the center of any display object at the x and y coordinate given. However, sometimes you'll need to align a series of objects along their edges — here, the list of scores will look best if each rank number is right-aligned and each score is left-aligned.
+To accomplish this, notice that in the following example code(star explorer) we set the anchorX property of each object. This property typically ranges between 0 (left) and 1 (right), with a default of 0.5 (center). 
+```
+someobject.anchorX = 0
+someobject.anchorY = 0
+```
+Anchors can even be set outside of the 0 to 1 range, although this usage is less common. Setting either anchorX or anchorY to values less than 0 or greater than 1 will place the anchor point conceptually somewhere in space outside of the object's edge boundaries, which can be useful in some instances.
+
 ### References 
 * [Corona Labs official Getting Started documentation](https://docs.coronalabs.com/guide/programming/)
 * [Corona Labs Introduction to Lua documentation](https://docs.coronalabs.com/guide/start/introLua/index.html)

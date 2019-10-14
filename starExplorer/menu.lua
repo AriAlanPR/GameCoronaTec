@@ -11,11 +11,11 @@ local scene = composer.newScene()
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
 local function gotoGame()
-    composer.gotoScene( "game" )
+    composer.gotoScene( "game", { time=800, effect="crossFade" } )
 end
  
 local function gotoHighScores()
-    composer.gotoScene( "highscores" )
+    composer.gotoScene( "highscores", { time=800, effect="crossFade" } )
 end
 
 -- Scene Events
@@ -41,6 +41,9 @@ function scene:create( event )
     title.y = 200
 
     -- For simplicity at this point, we'll use text objects instead of graphical buttons
+    local titleeButton = display.newText( sceneGroup, "Star Explorer", display.contentCenterX, 198, native.systemFont, 44 )
+    titleeButton:setFillColor( 0.82, 0.86, 1 )
+
     local playButton = display.newText( sceneGroup, "Play", display.contentCenterX, 700, native.systemFont, 44 )
     playButton:setFillColor( 0.82, 0.86, 1 )
  

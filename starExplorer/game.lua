@@ -253,7 +253,8 @@ local function endGame()
     -- Inside this table, we specify an effect duration (time) of 800 milliseconds 
     -- and an effect property of "crossFade". This built-in Composer effect will cause 
     -- the game scene to fade out while, concurrently, the menu scene fades in.
-    composer.gotoScene( "menu", { time=800, effect="crossFade" } )
+    composer.setVariable( "finalScore", score )
+    composer.gotoScene( "highscores", { time=800, effect="crossFade" } )
 end
 
 local function onCollision( event )
