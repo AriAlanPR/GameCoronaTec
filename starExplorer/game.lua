@@ -85,6 +85,12 @@ local uiGroup    -- Display group for UI objects like the score
 -- Now, because we're only creating local references for the display groups, 
 -- we must defer these actions until later, inside the scene:create() function.
 
+-- when the scene first loads, the sound files will be loaded into the 
+-- variable handles explosionSound and fireSound
+local explosionSound
+local fireSound
+local musicTrack
+
 --Update text of game
 local function updateText()
     livesText.text = "Lives: " .. lives
@@ -141,7 +147,9 @@ end --function create asteroid
 --]]
 
 local function fireLaser()
- 
+    -- Play fire sound!
+    audio.play( fireSound )
+
     local newLaser = display.newImageRect( mainGroup, objectSheet, 5, 14, 40 )
     physics.addBody( newLaser, "dynamic", { isSensor=true } )
     -- isBullet property makes the object subject to continuous collision detection rather than periodic collision detection at world time steps.
@@ -270,6 +278,9 @@ local function onCollision( event )
             display.remove( obj1 )
             display.remove( obj2 )
  
+            -- Play explosion sound!
+            audio.play( explosionSound )
+            
             for i = #asteroidsTable, 1, -1 do
                 if ( asteroidsTable[i] == obj1 or asteroidsTable[i] == obj2 ) then
                     table.remove( asteroidsTable, i )
@@ -284,6 +295,9 @@ local function onCollision( event )
         elseif ( ( obj1.myName == "ship" and obj2.myName == "asteroid" ) or ( obj1.myName == "asteroid" and obj2.myName == "ship" ) ) then
             if ( not died ) then
                 died = true
+                
+                -- Play explosion sound!
+                audio.play( explosionSound )
                 
                 -- Update lives
                 lives = lives - 1
@@ -359,6 +373,11 @@ function scene:create( event )
     -- Add "tap" and "touch" event listeners
     ship:addEventListener( "tap", fireLaser )
     ship:addEventListener( "touch", dragShip )
+
+    -- Load sound files
+    explosionSound = audio.loadSound( "audio/explosion.wav" )
+    fireSound = audio.loadSound( "audio/fire.wav" )
+    musicTrack = audio.loadStream( "audio/80s-Space-Game_Looping.wav")
 end
 
 
@@ -378,6 +397,9 @@ function scene:show( event )
         -- Do extra things
         Runtime:addEventListener( "collision", onCollision )
         gameLoopTimer = timer.performWithDelay( 500, gameLoop, 0 )
+
+        -- Start the music!
+        audio.play( musicTrack, { channel=1, loops=-1 } )
 	end
 end
 
@@ -397,6 +419,10 @@ function scene:hide( event )
         -- Stop collission after scene is dismissed and pause physics
         Runtime:removeEventListener( "collision", onCollision )
         physics.pause()
+
+        -- Stop the music!
+        audio.stop( 1 )
+        
         -- Dismiss scene from the game memory
         composer.removeScene( "game" )
 	end
@@ -408,7 +434,10 @@ function scene:destroy( event )
 
 	local sceneGroup = self.view
 	-- Code here runs prior to the removal of scene's view
-
+    -- Dispose audio!
+    audio.dispose( explosionSound )
+    audio.dispose( fireSound )
+    audio.dispose( musicTrack )
 end
 
 

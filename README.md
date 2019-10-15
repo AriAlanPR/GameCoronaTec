@@ -303,8 +303,7 @@ On some operating systems, this generator begins with the same initial value whi
 math.randomseed(os.time())
 ```
 
-**Note:** 
-*When you intend to generate random numbers in an app, seed the pseudo-random number generator just once, typically within main.lua. Doing so multiple times is redundant and unnecessary.*
+**Note:** *When you intend to generate random numbers in an app, seed the pseudo-random number generator just once, typically within main.lua. Doing so multiple times is redundant and unnecessary.*
 
 ## Some properties
 
@@ -473,7 +472,7 @@ system.pathForFile( "file.json", system.DocumentsDirectory)
 ```
 Property system.DocumentsDirectory tells Corona to create the *file*.json within the app's internal "documents" directory when saving a new file. 
 
-**Note:** Any data which needs to be accessed at some point after the app quits/closes should be stored in a persistent state, and the easiest way to store persistent data is to save it to a file on the device. Furthermore, this file must be stored in a persistent location.
+**Note:** *Any data which needs to be accessed at some point after the app quits/closes should be stored in a persistent state, and the easiest way to store persistent data is to save it to a file on the device. Furthermore, this file must be stored in a persistent location.*
 
 ### Loading Data
 In the following example for star explorer game we can do an inspect of how to read scores:
@@ -537,6 +536,87 @@ someobject.anchorX = 0
 someobject.anchorY = 0
 ```
 Anchors can even be set outside of the 0 to 1 range, although this usage is less common. Setting either anchorX or anchorY to values less than 0 or greater than 1 will place the anchor point conceptually somewhere in space outside of the object's edge boundaries, which can be useful in some instances.
+
+### Preloading and streaming audio
+There are two ways to load audio in your Corona app. Which one you use typically depends on how the audio file will be utilized.
+The first method is to use the audio.loadSound() command. This loads and pre-processes the entire audio file, after which it can be played on demand.
+For example:
+```
+local explosionSound = audio.loadSound( "explosion.wav" )
+```
+Once loaded, the sound can be played as many times as needed using the `audio.play()` command along with the audio *handle* you created via `audio.loadSound()`.
+
+ **Important Note:** *You do **not** play an audio file by directly specifying the file name. Instead, specify the handle variable assigned to `audio.loadSound()`.*
+
+For example, if our game has four objects explode simultaneously and each requires the explosion.wav sound to be played, we could issue these commands:
+```
+audio.play( explosionSound )
+audio.play( explosionSound )
+audio.play( explosionSound )
+audio.play( explosionSound )
+```
+
+In other words, there is no need to preload the same audio file multiple times with *audio.loadSound()*
+
+ by default, each instance will be assigned to a distinct audio channel. Then, once each instance has finished playing, the audio system will release/clear its channel so that another sound can be played upon it.
+
+ ### Streaming
+The second method to load audio into your app is audio.loadStream(). 
+
+This will gradually load and process small chunks of the audio file as needed. This command is best used in situations where possible latency will not have a critical impact upon the usability of the app. 
+
+**Note:** *Streaming does not use as much memory, so it's usually the best choice for large audio files such as background music.*
+
+An example of use when using this method is:
+```
+local backgroundMusic = audio.loadStream( "musicTrack1.wav" )
+```
+
+**Important Note:** *Unlike audio.loadSound(), audio files loaded with audio.loadStream() can only be played on one channel at a time. If you need the same audio file to stream on multiple channels, you'll need to load two distinct audio handles, for instance:*
+```
+local backgroundMusic1 = audio.loadStream( "musicTrack1.wav" )
+local backgroundMusic2 = audio.loadStream( "musicTrack1.wav" )
+```
+
+**Channel management.**
+ Basically, for our sound effects, we simply let the audio library pick a free channel on which to play any new sound instance. For music however, it's often useful to reserve a specific channel and play all of the background music on that channel — after all, it's unlikely that you'll want to have multiple music files playing at the same time, overlapping and audibly conflicting with each other. By reserving one dedicated channel for music, we can use it for all of the background music throughout the game.
+
+We can do this with the following code:
+```
+audio.reserveChannels( channelnumber )
+```
+We send a number through the channelnumber parameter to the audio.reserveChannels, for example: **1**
+
+It's possible to manipulate the overall volume of the channel
+```
+audio.setVolume( 0.5, { channel=1 } )
+```
+
+The foolowing code has a function `audio.play()` that simply starts playing the music. It's similar to how we play the sound effects except that it includes a Lua table as the second argument containing options for the command. Specifically, channel=1 instructs the audio library to explicitly play the music on *channel 1* and *loops=-1* tells the audio system to repeat (loop) the file indefinitely.
+```
+audio.play( musicTrack, { channel=1, loops=-1 } )
+```
+
+Unlike sound effects which are typically short and get cleared from their channel upon completion, streaming music should usually be stopped at an appropriate time when you're about to leave the scene. This can be easily handled in the "did" phase condition of the `scene:hide()` function. 
+We can achieve it by executing the following command:
+```
+audio.stop( channelnumber )
+```
+As in reserve channel, we use a number through the channelnumber parameter to the audio.stop, for example: **1**
+
+### Disposing Audio
+This is where the `scene:destroy()` function comes in handy, since it gets triggered as a result of calling `composer.removeScene()` or when Composer itself destroys the scene.
+
+When we need to do this, we simply call `audio.dispose()` function like in the following example:
+```
+audio.dispose( musicTrack )
+```
+
+**Important Note:** *we supply an audio handle to the audio.dispose() command, for example musicTrack. You should not attempt to dispose audio by simply indicating an audio file name.*
+
+### Icons
+
+Each of the app stores — the Apple App Store™, Google Play™, Amazon Appstore™, etc. — have different icon requirements and each requests various sizes and design considerations for different devices. There are several online services that will automatically create the entire set of required icons in the correct sizes, although you may wish to design them all yourself. Remember, these will be relatively small in size when they visually represent your app on an actual device, so fine details might be lost.
 
 ### References 
 * [Corona Labs official Getting Started documentation](https://docs.coronalabs.com/guide/programming/)
