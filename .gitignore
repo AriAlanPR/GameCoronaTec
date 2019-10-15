@@ -1,3 +1,6 @@
-GettingStarted04/*
-GettingStarted07/*
-starExplorer/audio/*
+/GettingStarted04/*
+/GettingStarted07/*
+/starExplorer/audio/*
+#ignore mac .dsstore file
+*/.DS_Store
+.DS_Store
