@@ -1,6 +1,6 @@
-/GettingStarted04/*
-/GettingStarted07/*
+/Built
 /starExplorer/audio/*
 #ignore mac .dsstore file
 */.DS_Store
 .DS_Store
+/TecISC/assets/audio/*
