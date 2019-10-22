@@ -32,7 +32,7 @@ local ESOptions = ESArray['frames'][character:getFrameIndex("dg_effects32-0")]
 local charSheet = graphics.newImageSheet( "assets/images/character1.png", chararcterOptions )
 local effectSheet = graphics.newImageSheet( "assets/images/effects_skills.png", ESOptions )
 
--- Initialize variables
+-- Initialize variables 
 local lives = 3
 local score = 0
 local died = false
