@@ -7,7 +7,11 @@ local scene = composer.newScene()
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
-
+function dump(o)
+    for k,v in pairs(o) do
+        print( k,v )
+    end
+ end
 -----------------------------------------------------------------------------------------
 --
 -- main.lua
@@ -24,12 +28,12 @@ physics.start()
 physics.setGravity( 0, 0 )
 
 -- Configure image sheets
-local characterArray = character.getSheet()
-local chararcterOptions = characterArray['frames'][character:getFrameIndex("character-0")]
-local ESArray = effectsSkills.getSheet()
-local ESOptions = ESArray['frames'][character:getFrameIndex("dg_effects32-0")]
+local characterArray = character:getSheet()
+local characterOptions = characterArray --['frames'][character:getFrameIndex("character-0")]
+local ESArray = effectsSkills:getSheet()
+local ESOptions = ESArray --['frames'][effectsSkills:getFrameIndex("dg_effects32-0")]
 
-local charSheet = graphics.newImageSheet( "assets/images/character1.png", chararcterOptions )
+local charSheet = graphics.newImageSheet( "assets/images/character1.png", characterOptions )
 local effectSheet = graphics.newImageSheet( "assets/images/effects_skills.png", ESOptions )
 
 -- Initialize variables 
@@ -58,6 +62,8 @@ local uiGroup    -- Display group for UI objects like the score
 -- variable handles explosionSound and fireSound
 local explosionSound
 local fireSound
+local damageSound
+local restoreSound
 local musicTrack
 
 --Update text of game
@@ -68,7 +74,7 @@ end
 
 --Make a function to create a new asteroid
 local function createAsteroid() 
-    local newAsteroid = display.newImageRect( mainGroup, effectSheet, 1, 102, 85 )
+    local newAsteroid = display.newImageRect( mainGroup, effectSheet, 14, 78, 78 )
     table.insert( asteroidsTable, newAsteroid )
     physics.addBody( newAsteroid, "dynamic", { radius=40, bounce=0.8 } )
     newAsteroid.myName = "asteroid"
@@ -119,7 +125,7 @@ local function fireLaser()
     -- Play fire sound!
     audio.play( fireSound )
 
-    local newLaser = display.newImageRect( mainGroup, effectSheet, 5, 14, 40 )
+    local newLaser = display.newImageRect( mainGroup, effectSheet, 64, 100, 100 )
     physics.addBody( newLaser, "dynamic", { isSensor=true } )
     -- isBullet property makes the object subject to continuous collision detection rather than periodic collision detection at world time steps.
     newLaser.isBullet = true
@@ -209,15 +215,15 @@ end
 
 --Restoring the maincharacter
 local function restoremaincharacter()
- 
     maincharacter.isBodyActive = false
+    audio.play( restoreSound)
     -- Set the maincharacter position to its initial place and to the center of the X coordinate
     maincharacter.x = display.contentCenterX
-    maincharacter.y = display.contentHeight - 100
- 
+    maincharacter.y = display.contentHeight + 100
+    
     -- Fade in the maincharacter
     transition.to( maincharacter, { alpha=1, time=4000,
-        onComplete = function()
+    onComplete = function()
             maincharacter.isBodyActive = true
             died = false
         end
@@ -266,7 +272,8 @@ local function onCollision( event )
                 died = true
                 
                 -- Play explosion sound!
-                audio.play( explosionSound )
+                audio.play(explosionSound )
+                audio.play(damageSound )
                 
                 -- Update lives
                 lives = lives - 1
@@ -329,15 +336,15 @@ function scene:create( event )
     -- assign an actual object to that reference inside a scene: function, and then other functions 
     -- will associate the reference with the new object.
     -- Initialize the maincharacter
-    maincharacter = display.newImageRect( mainGroup, character, 4, 98, 79 )
+    maincharacter = display.newImageRect( mainGroup, charSheet, 1, 128, 128 )
     maincharacter.x = display.contentCenterX
-    maincharacter.y = display.contentHeight - 100
+    maincharacter.y = display.contentHeight + 100
     physics.addBody( maincharacter, { radius=30, isSensor=true } )
     maincharacter.myName = "maincharacter"
  
     -- Display lives and score
-    livesText = display.newText( uiGroup, "Lives: " .. lives, 200, 80, native.systemFont, 36 )
-    scoreText = display.newText( uiGroup, "Score: " .. score, 400, 80, native.systemFont, 36 )
+    livesText = display.newText( uiGroup, "Lives: " .. lives, 200, -70, native.systemFont, 44 )
+    scoreText = display.newText( uiGroup, "Score: " .. score, 600, -70, native.systemFont, 44 )
 
     -- Add "tap" and "touch" event listeners
     maincharacter:addEventListener( "tap", fireLaser )
@@ -346,6 +353,8 @@ function scene:create( event )
     -- Load sound files
     explosionSound = audio.loadSound( "assets/audio/sounds/cpr_pichu_hit.wav" )
     fireSound = audio.loadSound( "assets/audio/sounds/Laser1.wav" )
+    damageSound = audio.loadSound("assets/audio/sounds/cpr_pikachu_damage.wav")
+    restoreSound = audio.loadSound("assets/audio/sounds/cpr_pikachu_appear.wav")
     musicTrack = audio.loadStream( "assets/audio/music/Reinforcement.mp3")
 end
 
@@ -406,6 +415,8 @@ function scene:destroy( event )
     -- Dispose audio!
     audio.dispose( explosionSound )
     audio.dispose( fireSound )
+    audio.dispose( damageSound )
+    audio.dispose( restoreSound)
     audio.dispose( musicTrack )
 end
 

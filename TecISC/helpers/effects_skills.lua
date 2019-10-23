@@ -1214,7 +1214,7 @@ SheetInfo.frameIndex =
 }
 
 function SheetInfo:getSheet()
-    return SheetInfo.sheet;
+    return self.sheet;
 end
 
 function SheetInfo:getFrameIndex(name)

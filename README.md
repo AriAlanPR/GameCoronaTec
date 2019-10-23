@@ -312,7 +312,7 @@ we specify properties whilst coding:
 Essentially, sensor objects detect collisions with other physical objects but they do not produce a physical response. 
 * `isBullet = Bool`. Complement to `isSensor` property, this helps us have the object subject to continuous collission detection rather than real world collision detection at certain time steps.
 * `radius = number`. Used to add a circular physical body to the object we´re working on.
-* `ship.isBodyActive = Bool`. Effectively removes the ship from the physics simulation so that it ceases to interact with other bodies.  
+* `isBodyActive = Bool`. Effectively removes the ship from the physics simulation so that it ceases to interact with other bodies.  
 
 ## Cleanup
 New lasers will appear at the same location as the ship (visually behind it too) and move upward across the screen. There is just one last thing to implement, and it's very important: cleanup. In any app, it's critical that you remove objects from the game which are no longer needed. If you don't, the app will eventually slow to a crawl, run out of memory, and crash — not a good experience for the player!
