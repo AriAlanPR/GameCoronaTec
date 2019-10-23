@@ -89,6 +89,10 @@ function scene:create( event )
     mountain.x = display.contentCenterX
     mountain.y = display.contentHeight
 
+    local title = display.newImageRect( sceneGroup, "assets/images/title.png", display.contentWidth - 200, 100 )
+    title.x = display.contentCenterX 
+    title.y = 100
+
     local highScoresHeader = display.newText( sceneGroup, "High Scores", display.contentCenterX, 100, native.systemFont, 60 )
     highScoresHeader:setFillColor({
         type="gradient",

@@ -74,9 +74,25 @@ end
 
 --Make a function to create a new asteroid
 local function createAsteroid() 
-    local newAsteroid = display.newImageRect( mainGroup, effectSheet, 14, 78, 78 )
+    -- Initialize asteroid sequence animation
+    asteroidSequence = {
+        name="woosh",
+        frames={31,64,95,14,73,129},
+        time=500, 
+    }
+    -- Load asteroid as animated sprite
+    local newAsteroid = display.newSprite( mainGroup, effectSheet, asteroidSequence) --display.newImageRect( mainGroup, effectSheet, 14, 78, 78 )
+    -- Increase asteroid size 
+    newAsteroid:scale( 1.8, 2 )
+    -- Add asteroid to table of asteroids
     table.insert( asteroidsTable, newAsteroid )
+    -- Add physic body to asteroid for collision
     physics.addBody( newAsteroid, "dynamic", { radius=40, bounce=0.8 } )
+    -- Set the sequence to play for the asteroid
+    newAsteroid:setSequence( "shot" )
+    -- Play asteroid sequence
+    newAsteroid:play()
+    -- Assign a name to identify the type of collision object
     newAsteroid.myName = "asteroid"
 
     --Placement
@@ -124,8 +140,11 @@ end --function create asteroid
 local function fireLaser()
     -- Play fire sound!
     audio.play( fireSound )
-
-    local newLaser = display.newImageRect( mainGroup, effectSheet, 64, 100, 100 )
+    -- Play character animation
+    maincharacter:setSequence( "shot" )
+    maincharacter:play()
+    
+    local newLaser = display.newImageRect( mainGroup, effectSheet, 118, 100, 120 )
     physics.addBody( newLaser, "dynamic", { isSensor=true } )
     -- isBullet property makes the object subject to continuous collision detection rather than periodic collision detection at world time steps.
     newLaser.isBullet = true
@@ -182,7 +201,7 @@ local function dragMainCharacter( event )
         --maincharacter.touchOffsetY = event.y - maincharacter.y
     elseif (  phase == "moved" ) then
         -- Move the maincharacter to the new touch position
-        maincharacter.x = event.x - maincharacter.touchOffsetX        
+        maincharacter.x = event.x - maincharacter.touchOffsetX     
         -- Same case if needed for y
         --maincharacter.y = event.y maincharacter.touchOffsetY
     elseif ( phase == "ended" or  phase == "cancelled" ) then
@@ -336,7 +355,15 @@ function scene:create( event )
     -- assign an actual object to that reference inside a scene: function, and then other functions 
     -- will associate the reference with the new object.
     -- Initialize the maincharacter
-    maincharacter = display.newImageRect( mainGroup, charSheet, 1, 128, 128 )
+    charSequence = {
+        name="shot",
+        start=121,
+        count=13,
+        time=250,
+        loopCount=1, 
+    }
+    maincharacter = display.newSprite( mainGroup, charSheet, charSequence) --display.newImageRect(mainGroup, charSheet, 1, 128, 128 )
+    maincharacter:scale( 2, 2 )
     maincharacter.x = display.contentCenterX
     maincharacter.y = display.contentHeight + 100
     physics.addBody( maincharacter, { radius=30, isSensor=true } )
