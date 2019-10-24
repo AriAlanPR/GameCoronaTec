@@ -314,6 +314,14 @@ Essentially, sensor objects detect collisions with other physical objects but th
 * `radius = number`. Used to add a circular physical body to the object we´re working on.
 * `isBodyActive = Bool`. Effectively removes the ship from the physics simulation so that it ceases to interact with other bodies.  
 
+**Body types** 
+
+"dynamic" — dynamic bodies are fully simulated. They can be moved manually in code, but normally they move according to forces like gravity or reactionary collision forces. This is the default body type for physical objects in Box2D. Dynamic bodies can collide with all body types.
+
+"static" — static bodies does not move under simulation and they behave as if they have infinite mass. Static bodies can be moved manually by the user, but they do not accept the application of velocity. Static bodies collide only with dynamic bodies, not with other static bodies or kinematic bodies.
+
+"kinematic" — kinematic bodies move under simulation only according to their velocity. Kinematic bodies will not respond to forces like gravity. They can be moved manually by the user, but normally they are moved by setting their velocities. Kinematic bodies collide only with dynamic bodies, not with other kinematic bodies or static bodies.
+
 ## Cleanup
 New lasers will appear at the same location as the ship (visually behind it too) and move upward across the screen. There is just one last thing to implement, and it's very important: cleanup. In any app, it's critical that you remove objects from the game which are no longer needed. If you don't, the app will eventually slow to a crawl, run out of memory, and crash — not a good experience for the player!
 

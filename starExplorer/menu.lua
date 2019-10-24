@@ -3,7 +3,7 @@
 local composer = require( "composer" )
  
 -- create a new variable named scene that holds a Composer scene object.
-local scene = composer.newScene()
+local scene = composer.newScene() 
 
 -- Accessible Code
 -- -----------------------------------------------------------------------------------
@@ -57,16 +57,16 @@ end
 
 -- show()
 function scene:show( event )
-
+    
 	local sceneGroup = self.view
-	local phase = event.phase
-
+    local phase = event.phase
+    
+    
 	if ( phase == "will" ) then
 		-- Code here runs when the scene is still off screen (but is about to come on screen)
-
+        
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
-
 	end
 end
 

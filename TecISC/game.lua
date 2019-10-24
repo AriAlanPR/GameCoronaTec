@@ -60,10 +60,12 @@ local uiGroup    -- Display group for UI objects like the score
 
 -- when the scene first loads, the sound files will be loaded into the 
 -- variable handles explosionSound and fireSound
+local gosound
 local explosionSound
 local fireSound
 local damageSound
 local restoreSound
+local timeupsound
 local musicTrack
 
 --Update text of game
@@ -77,19 +79,19 @@ local function createAsteroid()
     -- Initialize asteroid sequence animation
     asteroidSequence = {
         name="woosh",
-        frames={31,64,95,14,73,129},
-        time=500, 
+        frames={132,31,64,14,129,73,2,36},
+        time=900, 
     }
     -- Load asteroid as animated sprite
     local newAsteroid = display.newSprite( mainGroup, effectSheet, asteroidSequence) --display.newImageRect( mainGroup, effectSheet, 14, 78, 78 )
     -- Increase asteroid size 
-    newAsteroid:scale( 1.8, 2 )
+    newAsteroid:scale( 2.5, 2.7 )
     -- Add asteroid to table of asteroids
     table.insert( asteroidsTable, newAsteroid )
     -- Add physic body to asteroid for collision
-    physics.addBody( newAsteroid, "dynamic", { radius=40, bounce=0.8 } )
+    physics.addBody( newAsteroid, "dynamic", { radius=40, bounce=0.7 } )
     -- Set the sequence to play for the asteroid
-    newAsteroid:setSequence( "shot" )
+    newAsteroid:setSequence( "woosh" )
     -- Play asteroid sequence
     newAsteroid:play()
     -- Assign a name to identify the type of collision object
@@ -145,7 +147,7 @@ local function fireLaser()
     maincharacter:play()
     
     local newLaser = display.newImageRect( mainGroup, effectSheet, 118, 100, 120 )
-    physics.addBody( newLaser, "dynamic", { isSensor=true } )
+    physics.addBody( newLaser, "dynamic", { isSensor=true, shape={-9,-17 ,9,-17 ,9,17 ,-9,17} } )
     -- isBullet property makes the object subject to continuous collision detection rather than periodic collision detection at world time steps.
     newLaser.isBullet = true
     newLaser.myName = "laser"
@@ -164,7 +166,7 @@ local function fireLaser()
         We also set a custom time parameter of 500. For transitions, the time (duration) should always be specified in milliseconds
         meaning 1 sec 0 1000 milisecs
     ]]
-    transition.to( newLaser, { y=-40, time=500, 
+    transition.to( newLaser, { y=-40, time=800, 
     onComplete = function() display.remove( newLaser ) end} ) -- Sent Anonymous function
 end
 
@@ -250,6 +252,8 @@ local function restoremaincharacter()
 end
 
 local function endGame()
+    -- play "time´s up!!!" sound
+    audio.play( timeupsound)
     -- This time we're including an additional, 
     -- optional table containing parameters for a scene `transition effect`. 
     -- Inside this table, we specify an effect duration (time) of 800 milliseconds 
@@ -351,15 +355,23 @@ function scene:create( event )
     background.x = display.contentCenterX
     background.y = display.contentCenterY
 
+    local mountains = display.newImageRect( backGroup, "assets/images/mountain_group.png", display.contentWidth, 350 )
+    mountains.x = display.contentCenterX
+    mountains.y = display.contentHeight
+
+    local trees = display.newImageRect( backGroup, "assets/images/mountain_trees.png", display.contentWidth, 250 )
+    trees.x = display.contentCenterX
+    trees.y = display.contentHeight + 50
+
     -- To consider: Essentially, you can create a forward reference in the scene-accessible area, 
     -- assign an actual object to that reference inside a scene: function, and then other functions 
     -- will associate the reference with the new object.
     -- Initialize the maincharacter
     charSequence = {
         name="shot",
-        start=121,
-        count=13,
-        time=250,
+        start=123,
+        count=11,
+        time=600,
         loopCount=1, 
     }
     maincharacter = display.newSprite( mainGroup, charSheet, charSequence) --display.newImageRect(mainGroup, charSheet, 1, 128, 128 )
@@ -378,10 +390,12 @@ function scene:create( event )
     maincharacter:addEventListener( "touch", dragMainCharacter )
 
     -- Load sound files
+    gosound = audio.loadSound( "assets/audio/sounds/cpr_narrator_go.wav" )
     explosionSound = audio.loadSound( "assets/audio/sounds/cpr_pichu_hit.wav" )
-    fireSound = audio.loadSound( "assets/audio/sounds/Laser1.wav" )
+    fireSound = audio.loadSound( "assets/audio/sounds/cpr_pikachu_tail.wav" )
     damageSound = audio.loadSound("assets/audio/sounds/cpr_pikachu_damage.wav")
     restoreSound = audio.loadSound("assets/audio/sounds/cpr_pikachu_appear.wav")
+    timeupsound = audio.loadSound( "assets/audio/sounds/cpr_narrator_timeup.wav" )
     musicTrack = audio.loadStream( "assets/audio/music/Reinforcement.mp3")
 end
 
@@ -399,6 +413,10 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         -- Re-start the physics engine with physics.start() (remember that we paused it in scene:create()).
         physics.start()
+        
+        -- Start "GO!!!" sound
+        audio.play( gosound)
+
         -- Do extra things
         Runtime:addEventListener( "collision", onCollision )
         gameLoopTimer = timer.performWithDelay( 500, gameLoop, 0 )
@@ -440,8 +458,10 @@ function scene:destroy( event )
 	local sceneGroup = self.view
 	-- Code here runs prior to the removal of scene's view
     -- Dispose audio!
+    audio.dispose( gosound)
     audio.dispose( explosionSound )
-    audio.dispose( fireSound )
+    audio.dispose( fireSound)
+    audio.dispose( timeupsound)
     audio.dispose( damageSound )
     audio.dispose( restoreSound)
     audio.dispose( musicTrack )

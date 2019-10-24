@@ -5,6 +5,9 @@ local composer = require( "composer" )
 -- create a new variable named scene that holds a Composer scene object.
 local scene = composer.newScene()
 
+-- set a protected accessibility variable for sound
+local readysound
+
 -- Accessible Code
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
@@ -65,6 +68,9 @@ function scene:create( event )
 
     playButton:addEventListener( "tap", gotoGame )
     highScoresButton:addEventListener( "tap", gotoHighScores )
+
+    -- Initialize "Ready?!!!" sound
+    readysound = audio.loadSound( "assets/audio/sounds/cpr_narrator_ready.wav" )
 end
 
 
@@ -79,7 +85,8 @@ function scene:show( event )
 
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
-
+        -- Play "ready?!!!" sound
+        audio.play( readysound)
 	end
 end
 
@@ -104,8 +111,9 @@ end
 function scene:destroy( event )
 
 	local sceneGroup = self.view
-	-- Code here runs prior to the removal of scene's view
-
+    -- Code here runs prior to the removal of scene's view
+    -- Clear "Ready?!!!" sound
+    audio.dispose( readysound)
 end
 
 
