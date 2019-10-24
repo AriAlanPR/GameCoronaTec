@@ -202,11 +202,30 @@ local function dragMainCharacter( event )
         -- If moving across y coordinate is wanted
         --maincharacter.touchOffsetY = event.y - maincharacter.y
     elseif (  phase == "moved" ) then
+        -- get new X coordinate position for main character
+        local newposition = event.x - maincharacter.touchOffsetX
+        -- In the condition, maincharacter.x represents the previous position of
+        -- main character
+        if (newposition < maincharacter.x) then 
+            -- Moving towards left
+            -- Set the sequence to play for the drag left character
+            maincharacter:setSequence( "left" )
+            -- Play asteroid sequence
+            maincharacter:play()
+        elseif (newposition > maincharacter.x) then
+            -- Moving towards right
+            -- Set the sequence to play for the drag right
+            maincharacter:setSequence( "right" )
+            -- Play asteroid sequence
+            maincharacter:play()
+        end
         -- Move the maincharacter to the new touch position
-        maincharacter.x = event.x - maincharacter.touchOffsetX     
+        maincharacter.x = newposition     
         -- Same case if needed for y
         --maincharacter.y = event.y maincharacter.touchOffsetY
     elseif ( phase == "ended" or  phase == "cancelled" ) then
+        -- Stop character's movement
+        maincharacter:pause()
         -- Release touch focus on the maincharacter
         display.currentStage:setFocus( nil )
     end
@@ -368,11 +387,9 @@ function scene:create( event )
     -- will associate the reference with the new object.
     -- Initialize the maincharacter
     charSequence = {
-        name="shot",
-        start=123,
-        count=11,
-        time=600,
-        loopCount=1, 
+        {name="shot", start=123, count=11, time=600, loopCount=1 },
+        {name="left", start=70, count=8, time=600 },
+        {name="right", start=88, count=8, time=600 }
     }
     maincharacter = display.newSprite( mainGroup, charSheet, charSequence) --display.newImageRect(mainGroup, charSheet, 1, 128, 128 )
     maincharacter:scale( 2, 2 )
