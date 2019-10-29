@@ -225,7 +225,7 @@ local function dragMainCharacter( event )
         --maincharacter.y = event.y maincharacter.touchOffsetY
     elseif ( phase == "ended" or  phase == "cancelled" ) then
         -- Stop character's movement
-        maincharacter:pause()
+        -- maincharacter:pause()
         -- Release touch focus on the maincharacter
         display.currentStage:setFocus( nil )
     end
@@ -430,7 +430,6 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         -- Re-start the physics engine with physics.start() (remember that we paused it in scene:create()).
         physics.start()
-        
         -- Start "GO!!!" sound
         audio.play( gosound)
 
